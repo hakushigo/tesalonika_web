@@ -13,6 +13,27 @@ class mahasiswa extends Model
         'nim',
         'nama',
         'password',
-        'login_token'
+        'login_token',
+        'nomorHP',
+        'nomorKTP'
     ];
+
+    public function requests()
+    {
+        return $this->hasMany(RequestRuangan::class);
+    }
+
+    public function surat()
+    {
+        return $this->hasMany(RequestSurat::class);
+    }
+
+    public function suratIk()
+    {
+        return $this->hasMany(SuratIK::class);
+    }
+
+    public function izinBermalam(){
+        return $this->hasMany(IzinBermalam::class);
+    }
 }

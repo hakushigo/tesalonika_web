@@ -15,7 +15,9 @@ class Mahasiswa extends Controller
         $v = Validator::make($request->all(), [
             "nim"=> "required",
             "nama"=> "required",
-            "password"=> "required"
+            "password"=> "required",
+            "nomorHP"=> "required",
+            "nomorKTP" => "required"
         ]);
 
         if($v->fails()){
@@ -27,6 +29,8 @@ class Mahasiswa extends Controller
             "nim" => $request->input("nim"),
             "nama" => $request->input("nama"),
             "password" => bcrypt($request->input("password")),
+            "nomorHP" => $request->input("nomorHP"),
+            "nomorKTP" => $request->input("nomorKTP"),
         ];
 
         MahasiswaModels::create($data);

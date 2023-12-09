@@ -16,8 +16,8 @@ class CheckAPIKey
      */
     public function handle(Request $request, Closure $next)
     {
-        if($request->get("api_key") != null){
-            $retrieve_data = api_access::where("api_key", '=', $request->get("api_key"))->get()[0];
+        if($request->header("X-API-Key") != null){
+            $retrieve_data = api_access::where("api_key", '=', $request->header("X-API-Key"))->get()[0];
             if($retrieve_data == null){
                 return Response::json([
                     "error" => "Your API key doesn't exsists",

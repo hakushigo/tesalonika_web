@@ -13,15 +13,15 @@ return new class extends Migration
     {
         Schema::create('izin_keluar', function (Blueprint $table) {
             $table->id();
-            $table->date('rencana_berangkat');
-            $table->date('rencana_kembali');
+            $table->dateTime('rencana_berangkat');
+            $table->dateTime('rencana_kembali');
             $table->string('keperluan_ik');
-            $table->unsignedBigInteger('mahasiswa_id');
-            $table->string('status')->default(''); // Ubah ke default yang sesuai
+            $table->string('mahasiswa');
+            $table->string('status')->default("pending")->nullable();
             $table->date('tanggal_approve')->nullable();
             $table->timestamps();
     
-            $table->foreign('mahasiswa_id')->references('id')->on('mahasiswa')->onDelete('cascade');
+            $table->foreign('mahasiswa')->references('nim')->on('mahasiswa')->onDelete('cascade');
         });
     }
 

@@ -10,11 +10,11 @@ class IzinBermalam extends JsonResource
     {
         return [
             'id' => $this->id,
-            'tanggal_berangkat' => $this->kepertanggal_berangkatluansurat,
+            'tanggal_berangkat' => $this->tanggal_berangkat,
             'tanggal_kembali' => $this->tanggal_kembali,
             'keperluan_ib' => $this->keperluan_ib,
             'tempat_tujuan' => $this->tempat_tujuan,
-            'mahasiswa_id' => $this->mahasiswa_id,
+            'mahasiswa' => $this->mahasiswa,
             'status' => $this->status,
             'tanggal_approve' => $this->tanggal_approve,
         ];

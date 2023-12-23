@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\RequestSurat;
 use Illuminate\Support\Facades\Validator;
-use App\Http\Resources\RequestSurat as RequestSuratController;
+use App\Http\Resources\RequestSurat as RequestSuratResource;
 
 
 class SuratController extends BaseController
@@ -13,7 +13,7 @@ class SuratController extends BaseController
     public function index()
     {
         $surat = RequestSurat::all();
-        return response()->json(RequestSuratController::collection($surat), 200);
+        return response()->json(RequestSuratResource::collection($surat), 200);
     }
 
     public function store(Request $request)
@@ -30,7 +30,7 @@ class SuratController extends BaseController
         }
 
         $surat = RequestSurat::create($request->all());
-        return response()->json(new RequestSuratController($surat), 201);
+        return response()->json(new RequestSuratResource($surat), 201);
     }
 
     public function update(Request $request, $id)
@@ -49,7 +49,7 @@ class SuratController extends BaseController
         $surat = RequestSurat::findOrFail($id);
         $surat->update($request->all());
 
-        return response()->json(new RequestSuratController($surat), 200);
+        return response()->json(new RequestSuratResource($surat), 200);
     }
 
     public function destroy($id)
@@ -78,6 +78,6 @@ class SuratController extends BaseController
             'tanggal_approve' => $request->tanggal_approve,
         ]);
 
-        return response()->json(new RequestSuratController($surat), 200);
+        return response()->json(new RequestSuratResource($surat), 200);
     }
 }

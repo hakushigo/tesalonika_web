@@ -15,7 +15,7 @@ class SuratIK extends Model
         'rencana_berangkat',
         'rencana_kembali',
         'keperluan_ik',
-        'mahasiswa_id',
+        'mahasiswa',
         'status',
         'tanggal_approve'
     ];

@@ -8,10 +8,9 @@ use App\Http\Resources\Ruangan as RuanganResource;
 
 class RuanganController extends BaseController
 {
-    public function index(){
+    public function index(Request $request){
         $ruangan = Ruangan::all();
-        return $this->sendResponse(RuanganResource::collection($ruangan), 'ruangan retrived succesfully');
-
+        return response()->json(RuanganResource::collection($ruangan),200);
     }
 
     public function store(Request $request)

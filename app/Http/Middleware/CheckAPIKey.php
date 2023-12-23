@@ -16,11 +16,11 @@ class CheckAPIKey
      */
     public function handle(Request $request, Closure $next)
     {
-        if($request->get("api_key") != null){
-            $retrieve_data = api_access::where("api_key", '=', $request->get("api_key"))->get()[0];
+        if($request->header("X-API-KEY") != null){
+            $retrieve_data = api_access::where("api_key", '=', $request->header("X-API-KEY"))->get()[0];
             if($retrieve_data == null){
                 return Response::json([
-                    "error" => "Your API key doesn't exsists",
+                    "error" => "Your API key doesn't exsists :(",
                 ]);
             }
 
@@ -34,7 +34,7 @@ class CheckAPIKey
             }
         }else{
             return Response::json([
-                "error"=> "You don't provide the API key in the request body"
+                "error"=> "You don't provide the API key in the request body :("
             ], 500);
         }
     }

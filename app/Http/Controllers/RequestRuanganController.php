@@ -5,16 +5,18 @@ namespace App\Http\Controllers;
 use App\Models\RequestRuangan;
 use Illuminate\Http\Request as HttpRequest;
 use App\Http\Resources\RequestRuangan as RequestRuanganResource;
+use Illuminate\Http\Client\Request;
 
 class RequestRuanganController extends BaseController
 {
     public function store(HttpRequest $request)
     {
         $validatedData = $request->validate([
-            'mahasiswa_id' => 'required',
+            'mahasiswa' => 'required',
             'ruangan_id' => 'required',
             'start_time' => 'required',
             'end_time' => 'required',
+            'keterangan' => 'required',
         ]);
 
         $requestedDate = now()->toDateString(); // Tanggal request saat ini
@@ -29,9 +31,9 @@ class RequestRuanganController extends BaseController
         }
 
         $newRequest = RequestRuangan::create([
-            'mahasiswa_id' => $validatedData['mahasiswa_id'],
+            'mahasiswa' => $validatedData['mahasiswa'],
             'ruangan_id' => $validatedData['ruangan_id'],
-            'status' => null,
+            'status' => 'pending',
             'tanggal_terima' => null,
             'start_time' => $validatedData['start_time'],
             'end_time' => $validatedData['end_time'],
@@ -41,10 +43,15 @@ class RequestRuanganController extends BaseController
         return response()->json(new RequestRuanganResource($newRequest), 201);
     }
 
-    public function index()
+    public function index(HttpRequest $request)
     {
-        $requests = RequestRuangan::all();
-        return response()->json(RequestRuanganResource::collection($requests), 200);
+        if($request->header('nim') != ''){
+            $izinKeluar = RequestRuangan::where('mahasiswa', $request->header('nim'))->get();
+            return response()->json(RequestRuanganResource::collection($izinKeluar));
+        }else{
+            $izinKeluar = RequestRuangan::all();
+            return response()->json(RequestRuanganResource::collection($izinKeluar), 200);    
+        }
     }
 
     public function update(HttpRequest $request, $id)
@@ -78,13 +85,9 @@ class RequestRuanganController extends BaseController
 
     //Admin Approve 
     
-    public function approve(HttpRequest $request, $id)
+    public function approve(HttpRequest $request)
     {
-        $approvedRequest = RequestRuangan::findOrFail($id);
-
-        if ($approvedRequest->tanggal_terima) {
-            return response()->json(['message' => 'Request already approved'], 400);
-        }
+        $approvedRequest = RequestRuangan::findOrFail($request->id);
 
         $validatedData = $request->validate([
             'status' => 'required|in:approved,declined',
@@ -96,5 +99,21 @@ class RequestRuanganController extends BaseController
         $approvedRequest->save();
 
         return response()->json(['message' => 'Request approved successfully']);
+    }
+
+    public function destroy(HttpRequest $request){
+        if($request->has("id")){
+            $approvedRequest = RequestRuangan::where("id", $request->get("id"));
+            if($approvedRequest->count() > 0){
+                
+                $FoundapprovedRequest = $approvedRequest->first();
+                $FoundapprovedRequest->status = "cancelled";
+                $FoundapprovedRequest->save();
+
+                return response()->json(["status"=> "successfully"],200);
+            }
+        }
+
+        return response()->json(["error"=> "failed to delete, not found"],400);
     }
 }

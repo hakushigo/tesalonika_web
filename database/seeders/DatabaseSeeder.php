@@ -4,6 +4,8 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use App\Models\Ruangan;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -18,5 +20,10 @@ class DatabaseSeeder extends Seeder
         //     'name' => 'Test User',
         //     'email' => 'test@example.com',
         // ]);
+        \App\Models\BAAK::insert([
+            ["username" => "frieren", "password" => Hash::make("example123") ],
+            ["username" => "frieren1", "password" => Hash::make("example123") ],
+            ["username" => "frieren2", "password" => Hash::make("example123") ],
+        ]);
     }
 }

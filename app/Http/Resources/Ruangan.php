@@ -7,9 +7,9 @@ class Ruangan extends JsonResource{
     public function toArray($request)
     {
         return[
-            'nama' => $this ->nama,
+            'id' => $this->id,
+            'nama' => $this->nama,
         ];
-
         
     }
 }

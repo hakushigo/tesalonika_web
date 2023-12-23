@@ -9,10 +9,15 @@ use App\Http\Resources\SuratIK as SuratIKResource;
 
 class SuratIKController extends BaseController
 {
-    public function index()
+    public function index(Request $request)
     {
-        $izinKeluar = SuratIK::all();
-        return response()->json(SuratIKResource::collection($izinKeluar), 200);
+        if($request->header('nim') != ''){
+            $izinKeluar = SuratIK::where('mahasiswa', $request->header('nim'))->get();
+            return response()->json(SuratIKResource::collection($izinKeluar));
+        }else{
+            $izinKeluar = SuratIK::all();
+            return response()->json(SuratIKResource::collection($izinKeluar), 200);    
+        }
     }
 
     public function store(Request $request)
@@ -21,7 +26,8 @@ class SuratIKController extends BaseController
             'rencana_berangkat' => 'required|date',
             'rencana_kembali' => 'required|date',
             'keperluan_ik' => 'required',
-            'mahasiswa_id' => 'required|exists:mahasiswa,id',
+            'mahasiswa' => 'required|exists:mahasiswa,nim',
+            'status' => 'waiting'
         ]);
 
         if ($validator->fails()) {
@@ -29,14 +35,6 @@ class SuratIKController extends BaseController
         }
 
         $izinKeluar = SuratIK::create($request->all());
-
-        // Jika tanggal pengambilan sudah lewat, ubah status menjadi 'declined'
-        if ($izinKeluar->rencana_kembali <= now()) {
-            $izinKeluar->status = 'declined';
-            $izinKeluar->tanggal_approve = now();
-            $izinKeluar->save();
-        }
-
         return response()->json(new SuratIKResource($izinKeluar), 201);
     }
 
@@ -52,7 +50,7 @@ class SuratIKController extends BaseController
             'rencana_berangkat' => 'required|date',
             'rencana_kembali' => 'required|date',
             'keperluan_ik' => 'required',
-            'mahasiswa_id' => 'required|exists:mahasiswa,id',
+            'mahasiswa_id' => 'required|exists:mahasiswa,nim',
         ]);
 
         if ($validator->fails()) {
@@ -60,20 +58,12 @@ class SuratIKController extends BaseController
         }
 
         $izinKeluar->update($request->all());
-
-        // Jika tanggal pengambilan sudah lewat, ubah status menjadi 'declined'
-        if ($izinKeluar->rencana_kembali <= now()) {
-            $izinKeluar->status = 'declined';
-            $izinKeluar->tanggal_approve = now();
-            $izinKeluar->save();
-        }
-
         return response()->json(new SuratIKResource($izinKeluar), 200);
     }
 
-    public function approve(Request $request, $id)
+    public function approve(Request $request)
     {
-        $izinKeluar = SuratIK::find($id);
+        $izinKeluar = SuratIK::find($request->get("id"));
 
         if (!$izinKeluar) {
             return response()->json(['error' => 'Izin Keluar not found'], 404);
@@ -91,24 +81,22 @@ class SuratIKController extends BaseController
         $izinKeluar->tanggal_approve = now();
         $izinKeluar->save();
 
-        // Jika tanggal approve diisi dan status belum diubah, ubah status berdasarkan tanggal_approve
-        if ($izinKeluar->tanggal_approve && $izinKeluar->status === null) {
-            $izinKeluar->status = ($izinKeluar->tanggal_approve <= now()) ? 'approved' : 'declined';
-            $izinKeluar->save();
-        }
-
         return response()->json(new SuratIKResource($izinKeluar), 200);
     }
 
-    public function destroy($id)
+    public function destroy(Request $request)
     {
-        $izinKeluar = SuratIK::find($id);
+        if($request->has("id")){
+            $izinKeluar = SuratIK::find($request->id);
 
-        if (!$izinKeluar) {
-            return response()->json(['error' => 'Izin Keluar not found'], 404);
+            $izinKeluar->status = "cancelled";
+            $izinKeluar->save();
+            
+            return response()->json([], 200);    
+        }else{
+            return response()->json([
+                "error" => "ID?"
+            ], 500);
         }
-
-        $izinKeluar->delete();
-        return response()->json([], 204);
     }
 }

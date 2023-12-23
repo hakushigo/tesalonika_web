@@ -16,7 +16,7 @@ class IzinBermalam extends Model
         'tanggal_kembali',
         'keperluan_ib',
         'tempat_tujuan',
-        'mahasiswa_id',
+        'mahasiswa',
         'status',
         'tanggal_approve'
     ];

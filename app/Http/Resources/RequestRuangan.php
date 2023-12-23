@@ -10,7 +10,7 @@ class RequestRuangan extends JsonResource
     {
         return [
             'id' => $this->id,
-            'mahasiswa_id' => $this->mahasiswa_id,
+            'mahasiswa' => $this->mahasiswa,
             'ruangan_id' => $this->ruangan_id,
             'tanggal_terima' => $this->tanggal_terima,
             'status' => $this->status,

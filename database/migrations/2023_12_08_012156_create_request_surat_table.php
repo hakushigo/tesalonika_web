@@ -15,14 +15,14 @@ return new class extends Migration
             $table->id();
             $table->string('keperluansurat');
             $table->text('deskripsi');
-            $table->date('tanggal_pengajuan');
-            $table->date('tanggal_pengambilan');
-            $table->unsignedBigInteger('mahasiswa_id');
+            $table->dateTime('tanggal_pengajuan');
+            $table->dateTime('tanggal_pengambilan');
+            $table->string('mahasiswa');
             $table->string('status')->default(''); // Ubah ke default yang sesuai
-            $table->date('tanggal_approve')->nullable();
+            $table->dateTime('tanggal_approve')->nullable();
             $table->timestamps();
     
-            $table->foreign('mahasiswa_id')->references('id')->on('mahasiswa')->onDelete('cascade');
+            $table->foreign('mahasiswa')->references('nim')->on('mahasiswa')->onDelete('cascade');
         });
     }
 

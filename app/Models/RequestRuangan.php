@@ -9,7 +9,7 @@ class RequestRuangan extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'mahasiswa_id',
+        'mahasiswa',
         'ruangan_id',
         'tanggal_terima',
         'status',
@@ -17,6 +17,8 @@ class RequestRuangan extends Model
         'end_time',
         'start_time'
     ];
+
+    protected $table = "request_ruangan";
 
     // Relationship dengan Mahasiswa
     public function mahasiswa()

@@ -1,4 +1,4 @@
-<?
+<?php
 
 namespace App\Http\Controllers;
 
@@ -10,10 +10,15 @@ use App\Http\Resources\IzinBermalam as IzinBermalamResource;
 class IzinBermalamController extends BaseController
 {
 
-    public function index()
+    public function index(Request $request)
     {
-        $izinBermalams = IzinBermalam::all();
-        return response()->json(IzinBermalamResource::collection($izinBermalams), 200);
+        if($request->header('nim') != ''){
+            $izinKeluar = IzinBermalam::where('mahasiswa', $request->header('nim'))->get();
+            return response()->json(IzinBermalamResource::collection($izinKeluar));
+        }else{
+            $izinKeluar = IzinBermalam::all();
+            return response()->json(IzinBermalamResource::collection($izinKeluar), 200);    
+        }
     }
 
     public function store(Request $request)
@@ -23,7 +28,7 @@ class IzinBermalamController extends BaseController
             'tanggal_kembali' => 'required|date',
             'keperluan_ib' => 'required',
             'tempat_tujuan' => 'required',
-            'mahasiswa_id' => 'required|exists:mahasiswa,id',
+            'mahasiswa' => 'required|exists:mahasiswa,nim',
         ]);
 
         if ($validator->fails()) {
@@ -36,17 +41,21 @@ class IzinBermalamController extends BaseController
         $jam = date('H', strtotime($tanggalBerangkat));
 
         if (!($hari === 'Friday' && $jam >= 17) && !($hari === 'Saturday' && ($jam >= 8 && $jam < 17))) {
-            return response()->json(['error' => 'Izin hanya bisa direquest pada Jumat di atas jam 17.00 dan Sabtu'], 400);
+            return response()->json(['error' => 'not_friday_saturday'], 400);
+        }
+
+
+        if (!($hari === 'Friday') && !($hari === 'Saturday')) {
+            return response()->json(['error' => 'not_friday_saturday'], 400);
         }
 
         $izinBermalam = IzinBermalam::create($request->all());
-
         return response()->json(new IzinBermalamResource($izinBermalam), 201);
     }
 
-    public function approve(Request $request, $id)
+    public function approve(Request $request)
     {
-        $izinBermalam = IzinBermalam::find($id);
+        $izinBermalam = IzinBermalam::find($request->get("id"));
 
         if (!$izinBermalam) {
             return response()->json(['error' => 'Izin Bermalam not found'], 404);
@@ -67,15 +76,16 @@ class IzinBermalamController extends BaseController
         return response()->json(new IzinBermalamResource($izinBermalam), 200);
     }
 
-    public function destroy($id)
+    public function destroy(Request $request)
     {
-        $izinBermalam = IzinBermalam::find($id);
+        $izinBermalam = IzinBermalam::find($request->get('id'));
 
         if (!$izinBermalam) {
             return response()->json(['error' => 'Izin Bermalam not found'], 404);
         }
 
-        $izinBermalam->delete();
+        $izinBermalam->status = "cancelled";
+        $izinBermalam->save();
         return response()->json([], 204);
     }
 

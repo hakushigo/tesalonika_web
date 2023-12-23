@@ -17,12 +17,12 @@ return new class extends Migration
             $table->dateTime('start_time'); //tanggal untuk memakai ruangan
             $table->dateTime('end_time'); //tanggal berakhir pemakaian ruangan
             $table->string("keterangan");
-            $table->unsignedBigInteger('mahasiswa_id');
+            $table->string('mahasiswa');
             $table->unsignedBigInteger('ruangan_id');
             $table->dateTime('tanggal_terima')->nullable();
             $table->string('status')->nullable(); // Kolom status sebagai string
 
-            $table->foreign('mahasiswa_id')->references('id')->on('mahasiswa')->onDelete('cascade');
+            $table->foreign('mahasiswa')->references('nim')->on('mahasiswa')->onDelete('cascade');
             $table->foreign('ruangan_id')->references('id')->on('ruangan')->onDelete('cascade');
 
             $table->timestamps();
